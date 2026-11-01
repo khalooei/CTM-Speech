@@ -1,0 +1,32 @@
+# Codec-generality extension (compact grid): qwen3tts. Same protocol as main_hier.
+seed: 0
+resume: true
+output_dir: runs/extra_qwen3tts_hier
+gate: transcript
+refine_top_frames: 16
+refine_max_cells: 256
+random_seeds: 2
+decode_batch_seconds: 320
+decode_batch_max: 48
+data:
+  manifest:
+    - data/manifests/librispeech_test_clean.jsonl
+  esc50_root: data/esc50
+  sample_rate: 16000
+  max_utterances: 40
+asr:
+  surrogate: facebook/wav2vec2-base-960h
+  evaluator: facebook/hubert-large-ls960-ft
+  evaluator2: facebook/wav2vec2-large-960h-lv60-self
+codecs:
+  - name: qwen3tts
+rankings: [intervention, frame_block, random, rvq_early, energy]
+conditions:
+  - {condition_id: gaussian_snr25, kind: gaussian, params: {snr_db: 25}}
+  - {condition_id: gaussian_snr15, kind: gaussian, params: {snr_db: 15}}
+  - {condition_id: gaussian_snr5,  kind: gaussian, params: {snr_db: 5}}
+  - {condition_id: esc50_snr8,     kind: esc50,    params: {snr_db: 8}}
+  - {condition_id: opus_8k,        kind: opus,     params: {bitrate: 8000}}
+  - {condition_id: pgd_ctc_eps0.01,  kind: pgd_ctc, params: {eps: 0.01,  step_size: 0.001,  steps: 20}}
+  - {condition_id: pgd_ctc_eps0.02,  kind: pgd_ctc, params: {eps: 0.02,  step_size: 0.002,  steps: 20}}
+  - {condition_id: pgd_ctc_eps0.04,  kind: pgd_ctc, params: {eps: 0.04,  step_size: 0.004,  steps: 30}}

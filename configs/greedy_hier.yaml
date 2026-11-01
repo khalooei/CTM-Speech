@@ -1,0 +1,34 @@
+# Fully greedy forward selection over frame blocks vs one-shot hierarchical ranking.
+# Restricted to rows with <= 160 changed frames (O(|F|^2) decodes) => mostly Mimi (12.5 Hz) and short DAC/ST utterances.
+seed: 0
+resume: true
+output_dir: runs/greedy_hier
+gate: transcript
+refine_top_frames: 16
+refine_max_cells: 256
+random_seeds: 1
+do_greedy: true
+greedy_max_frames: 160
+decode_batch_seconds: 320
+decode_batch_max: 48
+data:
+  manifest: data/manifests/librispeech_test_clean.jsonl
+  esc50_root: data/esc50
+  sample_rate: 16000
+  max_utterances: 60
+asr:
+  surrogate: facebook/wav2vec2-base-960h
+  evaluator: facebook/hubert-large-ls960-ft
+  evaluator2: facebook/wav2vec2-large-960h-lv60-self
+codecs:
+  - name: mimi
+    num_codebooks: 8
+    load_path: checkpoints/mimi/tokenizer-e351c8d8-checkpoint125.safetensors
+  - name: dac
+    model_type: 16khz
+    bitrate: 8kbps
+    load_path: checkpoints/dac/weights_16khz.pth
+rankings: [intervention, frame_block, random, rvq_early, greedy_frame]
+conditions:
+  - {condition_id: gaussian_snr5,  kind: gaussian, params: {snr_db: 5}}
+  - {condition_id: pgd_ctc_eps0.02,  kind: pgd_ctc, params: {eps: 0.02,  step_size: 0.002,  steps: 20}}

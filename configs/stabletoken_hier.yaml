@@ -1,0 +1,29 @@
+# StableToken F-CTM with the same PGD budget/steps as the main grid. Needs its own environment: bash scripts/setup_stabletoken.sh.
+seed: 0
+resume: true
+output_dir: runs/stabletoken_hier
+gate: transcript
+refine_top_frames: 16
+refine_max_cells: 48
+random_seeds: 1
+decode_batch_seconds: 60
+decode_batch_max: 8
+data:
+  manifest:
+    - data/manifests/librispeech_test_clean.jsonl
+  esc50_root: data/esc50
+  sample_rate: 16000
+  max_utterances: 30
+asr:
+  surrogate: facebook/wav2vec2-base-960h
+  evaluator: facebook/hubert-large-ls960-ft
+  evaluator2: facebook/wav2vec2-large-960h-lv60-self
+codecs:
+  - name: stabletoken
+    repo_dir: third_party/StableToken
+    checkpoint_dir: checkpoints/StableToken
+rankings: [intervention, frame_block, random, energy]
+conditions:
+  - {condition_id: gaussian_snr25, kind: gaussian, params: {snr_db: 25}}
+  - {condition_id: gaussian_snr5,  kind: gaussian, params: {snr_db: 5}}
+  - {condition_id: pgd_ctc_eps0.02,  kind: pgd_ctc, params: {eps: 0.02,  step_size: 0.002,  steps: 20}}

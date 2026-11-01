@@ -1,0 +1,12 @@
+# Optional StableToken research-repo dependencies.
+# Prefer a separate conda env if these conflict with the main CTM stack.
+# Install after cloning Tencent/StableToken into third_party/StableToken.
+torch
+torchaudio
+transformers
+omegaconf
+einops
+soundfile
+numpy
+scipy
+tqdm

@@ -1,0 +1,41 @@
+# FLEURS en_us test (the StableToken protocol's dataset): read speech, different recording conditions from LibriSpeech.
+seed: 0
+resume: true
+output_dir: runs/fleurs_hier
+gate: transcript
+refine_top_frames: 16
+refine_max_cells: 256
+random_seeds: 2
+decode_batch_seconds: 320
+decode_batch_max: 48
+data:
+  manifest:
+    - data/manifests/fleurs_en_us_test.jsonl
+  esc50_root: data/esc50
+  sample_rate: 16000
+  max_utterances: 40
+asr:
+  surrogate: facebook/wav2vec2-base-960h
+  evaluator: facebook/hubert-large-ls960-ft
+  evaluator2: facebook/wav2vec2-large-960h-lv60-self
+codecs:
+  - name: dac
+    model_type: 16khz
+    bitrate: 8kbps
+    load_path: checkpoints/dac/weights_16khz.pth
+  - name: mimi
+    num_codebooks: 8
+    load_path: checkpoints/mimi/tokenizer-e351c8d8-checkpoint125.safetensors
+  - name: speechtokenizer
+    config_path: checkpoints/speechtokenizer/config.json
+    ckpt_path: checkpoints/speechtokenizer/SpeechTokenizer.pt
+rankings: [intervention, frame_block, random, rvq_early, displacement, margin, gradient, energy]
+conditions:
+  - {condition_id: gaussian_snr25, kind: gaussian, params: {snr_db: 25}}
+  - {condition_id: gaussian_snr5,  kind: gaussian, params: {snr_db: 5}}
+  - {condition_id: pink_snr22,     kind: pink,     params: {snr_db: 22}}
+  - {condition_id: brown_snr16,    kind: brown,    params: {snr_db: 16}}
+  - {condition_id: bitcrush_10bit, kind: bit_crush, params: {bits: 10}}
+  - {condition_id: esc50_snr16,    kind: esc50,    params: {snr_db: 16}}
+  - {condition_id: esc10_snr16,    kind: esc10,    params: {snr_db: 16}}
+  - {condition_id: pgd_ctc_eps0.02,  kind: pgd_ctc, params: {eps: 0.02,  step_size: 0.002,  steps: 20}}

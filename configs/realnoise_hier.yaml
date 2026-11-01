@@ -1,0 +1,43 @@
+# Real-noise generalisation with the two noise corpora common in 2025-2026 robustness work:
+# MUSAN (free-sound + noise subsets) and DEMAND (16 kHz, 10 environments). Same protocol as main_hier.
+seed: 0
+resume: true
+output_dir: runs/realnoise_hier
+gate: transcript
+refine_top_frames: 16
+refine_max_cells: 256
+random_seeds: 2
+decode_batch_seconds: 320
+decode_batch_max: 48
+data:
+  manifest:
+    - data/manifests/librispeech_test_clean.jsonl
+  esc50_root: data/esc50
+  noise_banks:
+    musan: data/musan/musan/noise
+    demand: data/demand
+  sample_rate: 16000
+  max_utterances: 40
+asr:
+  surrogate: facebook/wav2vec2-base-960h
+  evaluator: facebook/hubert-large-ls960-ft
+  evaluator2: facebook/wav2vec2-large-960h-lv60-self
+codecs:
+  - name: dac
+    model_type: 16khz
+    bitrate: 8kbps
+    load_path: checkpoints/dac/weights_16khz.pth
+  - name: mimi
+    num_codebooks: 8
+    load_path: checkpoints/mimi/tokenizer-e351c8d8-checkpoint125.safetensors
+  - name: speechtokenizer
+    config_path: checkpoints/speechtokenizer/config.json
+    ckpt_path: checkpoints/speechtokenizer/SpeechTokenizer.pt
+rankings: [intervention, frame_block, random, rvq_early, displacement, margin, gradient, energy]
+conditions:
+  - {condition_id: musan_snr16,  kind: musan,  params: {snr_db: 16}}
+  - {condition_id: musan_snr8,   kind: musan,  params: {snr_db: 8}}
+  - {condition_id: musan_snr0,   kind: musan,  params: {snr_db: 0}}
+  - {condition_id: demand_snr16, kind: demand, params: {snr_db: 16}}
+  - {condition_id: demand_snr8,  kind: demand, params: {snr_db: 8}}
+  - {condition_id: demand_snr0,  kind: demand, params: {snr_db: 0}}

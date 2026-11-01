@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ctm-speech"
+version = "1.0.0"
+description = "Functional critical token mass (F-CTM): measuring which token flips of neural speech tokenizers actually matter downstream"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "Mohammad Khalooei", email = "mohammad.khalooei@sharif.edu" },
+  { name = "Mohammad Sabokrou" },
+]
+keywords = ["speech tokenizers", "neural audio codecs", "robustness", "adversarial examples", "attribution"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Multimedia :: Sound/Audio :: Speech",
+]
+# torch/torchaudio are installed by scripts/setup_env.sh from the CUDA wheel index.
+dependencies = [
+  "numpy>=1.24", "scipy>=1.10", "pandas>=2.0", "statsmodels>=0.14", "matplotlib>=3.7",
+  "soundfile>=0.12", "librosa>=0.10", "PyYAML>=6.0", "tqdm>=4.65", "jiwer>=3.0", "pystoi>=0.3",
+  "transformers>=4.46", "huggingface_hub>=0.24", "safetensors>=0.4", "einops>=0.7",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4"]
+
+[project.urls]
+Homepage = "https://khalooei.github.io/CTM-Speech/"
+Repository = "https://github.com/khalooei/CTM-Speech"
+
+[project.scripts]
+ctm-run = "ctm.runner_v2:main"
+ctm-analyze = "ctm.analysis_v2:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+filterwarnings = ["ignore::DeprecationWarning"]

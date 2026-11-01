@@ -1,0 +1,35 @@
+# Install torch + torchaudio first from the CUDA wheel index (scripts/setup_env.sh does this).
+numpy>=1.24
+scipy>=1.10
+pandas>=2.0
+statsmodels>=0.14
+matplotlib>=3.7
+soundfile>=0.12
+librosa>=0.10
+PyYAML>=6.0
+tqdm>=4.65
+jiwer>=3.0
+pystoi>=0.3
+transformers>=4.46
+huggingface_hub>=0.24
+safetensors>=0.4
+sentencepiece
+einops>=0.7
+beartype
+pytest>=7.4
+# Runtime dependencies of the codec packages, which setup_env.sh installs with --no-deps
+# (descript-audio-codec, descript-audiotools, moshi, speechtokenizer):
+argbind
+julius
+ffmpy
+flatten_dict
+importlib_resources
+markdown2
+pyloudnorm
+randomname
+rich
+tensorboard
+torch_stoi
+ipython
+lion_pytorch
+accelerate
